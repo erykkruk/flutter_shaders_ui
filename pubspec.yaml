@@ -29,4 +29,13 @@ dev_dependencies:
   flutter_lints: ^4.0.0
 
 flutter:
-  shaders: []
+  shaders:
+    - shaders/aurora.frag
+    - shaders/fire.frag
+    - shaders/glass.frag
+    - shaders/glow_orb.frag
+    - shaders/pulse.frag
+    - shaders/ripple.frag
+    - shaders/shimmer.frag
+    - shaders/snow.frag
+    - shaders/wave.frag
