@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_shaders_ui/flutter_shaders_ui.dart';
 
+import 'playground/aurora_playground.dart';
+import 'playground/fire_playground.dart';
+import 'playground/glass_playground.dart';
+import 'playground/glow_orb_playground.dart';
+import 'playground/pulse_playground.dart';
+import 'playground/ripple_playground.dart';
+import 'playground/shimmer_playground.dart';
+import 'playground/snow_playground.dart';
+import 'playground/wave_playground.dart';
 import 'showcase/showcase_app.dart';
 
 void main() {
@@ -254,55 +263,55 @@ class GalleryHomeScreen extends StatelessWidget {
       title: 'Snow',
       icon: Icons.ac_unit,
       gradient: [Color(0xFF1A237E), Color(0xFF4FC3F7)],
-      destination: SnowDetailScreen(),
+      destination: SnowPlayground(),
     ),
     _ShaderCard(
       title: 'Aurora',
       icon: Icons.auto_awesome,
       gradient: [Color(0xFF1B5E20), Color(0xFF7C4DFF)],
-      destination: AuroraDetailScreen(),
+      destination: AuroraPlayground(),
     ),
     _ShaderCard(
       title: 'Fire',
       icon: Icons.local_fire_department,
       gradient: [Color(0xFFBF360C), Color(0xFFFFAB00)],
-      destination: FireDetailScreen(),
+      destination: FirePlayground(),
     ),
     _ShaderCard(
       title: 'Glass',
       icon: Icons.blur_on,
       gradient: [Color(0xFF37474F), Color(0xFF78909C)],
-      destination: GlassDetailScreen(),
+      destination: GlassPlayground(),
     ),
     _ShaderCard(
       title: 'Wave',
       icon: Icons.waves,
       gradient: [Color(0xFF0D47A1), Color(0xFF00BCD4)],
-      destination: WaveDetailScreen(),
+      destination: WavePlayground(),
     ),
     _ShaderCard(
       title: 'Shimmer',
       icon: Icons.flash_on,
       gradient: [Color(0xFF424242), Color(0xFFFFD700)],
-      destination: ShimmerDetailScreen(),
+      destination: ShimmerPlayground(),
     ),
     _ShaderCard(
       title: 'Pulse',
       icon: Icons.favorite,
       gradient: [Color(0xFF4A148C), Color(0xFFE040FB)],
-      destination: PulseDetailScreen(),
+      destination: PulsePlayground(),
     ),
     _ShaderCard(
       title: 'Glow Orb',
       icon: Icons.circle,
       gradient: [Color(0xFF0D1117), Color(0xFF00E5FF)],
-      destination: GlowOrbDetailScreen(),
+      destination: GlowOrbPlayground(),
     ),
     _ShaderCard(
       title: 'Ripple',
       icon: Icons.touch_app,
       gradient: [Color(0xFF263238), Color(0xFF80CBC4)],
-      destination: RippleDetailScreen(),
+      destination: RipplePlayground(),
     ),
   ];
 }
@@ -395,429 +404,3 @@ class _ShaderPageRoute extends PageRouteBuilder {
       );
 }
 
-// ---------------------------------------------------------------------------
-// Detail screen shell — wraps effect full-screen with back button
-// ---------------------------------------------------------------------------
-
-class _DetailShell extends StatelessWidget {
-  const _DetailShell({required this.title, required this.child});
-
-  final String title;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: Colors.black38,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: child,
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Detail screens for each effect
-// ---------------------------------------------------------------------------
-
-class SnowDetailScreen extends StatelessWidget {
-  const SnowDetailScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _DetailShell(
-      title: 'Snow Effect',
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF0D47A1), Color(0xFF1A237E)],
-          ),
-        ),
-        child: SnowEffect(
-          density: 0.7,
-          speed: 1.0,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.ac_unit, size: 64, color: Colors.white70),
-                  const SizedBox(height: 16),
-                  _infoCard(
-                    'Multi-layer parallax snow with wind turbulence.\n\n'
-                    'Params: density, speed, size',
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class AuroraDetailScreen extends StatelessWidget {
-  const AuroraDetailScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _DetailShell(
-      title: 'Aurora Effect',
-      child: Container(
-        color: const Color(0xFF0A0A0A),
-        child: AuroraEffect(
-          color1: const Color(0xFF00E676),
-          color2: const Color(0xFF7C4DFF),
-          intensity: 0.8,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.auto_awesome,
-                    size: 64,
-                    color: Colors.white70,
-                  ),
-                  const SizedBox(height: 16),
-                  _infoCard(
-                    '5-layer aurora curtains with domain-warped FBM.\n\n'
-                    'Params: color1, color2, intensity, speed',
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class FireDetailScreen extends StatelessWidget {
-  const FireDetailScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _DetailShell(
-      title: 'Fire Effect',
-      child: Container(
-        color: const Color(0xFF1A0A00),
-        child: FireEffect(
-          intensity: 0.75,
-          speed: 1.0,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.local_fire_department,
-                    size: 64,
-                    color: Colors.white70,
-                  ),
-                  const SizedBox(height: 16),
-                  _infoCard(
-                    'Layered FBM flames with ember sparks.\n\n'
-                    'Params: intensity, speed, color1, color2',
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class GlassDetailScreen extends StatelessWidget {
-  const GlassDetailScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _DetailShell(
-      title: 'Glass Effect',
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF1A237E), Color(0xFF880E4F)],
-          ),
-        ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: GlassEffect(
-                frost: 0.5,
-                opacity: 0.35,
-                tint: Colors.white,
-                child: Container(
-                  padding: const EdgeInsets.all(32),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.blur_on,
-                        size: 64,
-                        color: Colors.white70,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Frosted Glass',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Voronoi frost patterns with light scattering.\n\n'
-                        'Params: blurAmount, frost, opacity, tint',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.8),
-                          fontSize: 14,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class WaveDetailScreen extends StatelessWidget {
-  const WaveDetailScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _DetailShell(
-      title: 'Wave Background',
-      child: WaveBackground(
-        color1: const Color(0xFF1A237E),
-        color2: const Color(0xFF00BCD4),
-        amplitude: 0.4,
-        frequency: 2.5,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.waves, size: 64, color: Colors.white70),
-                const SizedBox(height: 16),
-                _infoCard(
-                  'Multi-layer sine waves with noise drift.\n\n'
-                  'Params: color1, color2, amplitude, frequency, speed',
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ShimmerDetailScreen extends StatelessWidget {
-  const ShimmerDetailScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _DetailShell(
-      title: 'Shimmer Effect',
-      child: Container(
-        color: const Color(0xFF212121),
-        child: ShimmerEffect(
-          color: const Color(0xFFFFD700),
-          speed: 1.0,
-          width: 0.15,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Shimmer on a "loading" placeholder
-                  Container(
-                    width: 200,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: Colors.white12,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    width: 150,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: Colors.white12,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  _infoCard(
-                    'Directional sweep with sparkle noise.\n\n'
-                    'Params: color, angle, speed, width',
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class PulseDetailScreen extends StatelessWidget {
-  const PulseDetailScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _DetailShell(
-      title: 'Pulse Effect',
-      child: Container(
-        color: const Color(0xFF1A1A2E),
-        child: PulseEffect(
-          color: const Color(0xFFE040FB),
-          speed: 1.0,
-          intensity: 0.8,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.favorite, size: 64, color: Colors.white70),
-                  const SizedBox(height: 16),
-                  _infoCard(
-                    'Breathing radial glow with expanding rings.\n\n'
-                    'Params: color, speed, intensity',
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class GlowOrbDetailScreen extends StatelessWidget {
-  const GlowOrbDetailScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _DetailShell(
-      title: 'Glow Orb — Drag it!',
-      child: Container(
-        color: const Color(0xFF0D1117),
-        child: GlowOrb.draggable(
-          color: const Color(0xFF00E5FF),
-          radius: 0.12,
-          glowIntensity: 1.2,
-          pulseSpeed: 1.0,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.touch_app, size: 64, color: Colors.white70),
-                  const SizedBox(height: 16),
-                  _infoCard(
-                    'Drag the orb around!\n\n'
-                    'GlowOrb() — static\n'
-                    'GlowOrb.bouncing() — screensaver\n'
-                    'GlowOrb.draggable() — drag & drop',
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class RippleDetailScreen extends StatelessWidget {
-  const RippleDetailScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _DetailShell(
-      title: 'Ripple Effect',
-      child: RippleEffect(
-        color: const Color(0xFF80CBC4),
-        intensity: 1.0,
-        duration: const Duration(milliseconds: 900),
-        child: Container(
-          color: const Color(0xFF263238),
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.touch_app, size: 64, color: Colors.white70),
-                  const SizedBox(height: 16),
-                  _infoCard(
-                    'Tap anywhere for concentric ring ripple!\n\n'
-                    'Params: color, duration, intensity',
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Helper — info card with glass styling
-// ---------------------------------------------------------------------------
-
-Widget _infoCard(String text) {
-  return Container(
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.black38,
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: Colors.white12),
-    ),
-    child: Text(
-      text,
-      style: const TextStyle(color: Colors.white70, fontSize: 14),
-      textAlign: TextAlign.center,
-    ),
-  );
-}

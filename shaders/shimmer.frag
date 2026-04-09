@@ -12,26 +12,6 @@ uniform float uWidth;        // index 8, shimmer band width 0-1
 
 out vec4 fragColor;
 
-const float PI = 3.14159265359;
-
-// Soft noise for subtle texture within the shimmer band.
-float hash(vec2 p) {
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
-}
-
-float noise(vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    vec2 u = f * f * (3.0 - 2.0 * f);
-
-    float a = hash(i);
-    float b = hash(i + vec2(1.0, 0.0));
-    float c = hash(i + vec2(0.0, 1.0));
-    float d = hash(i + vec2(1.0, 1.0));
-
-    return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
-}
-
 void main() {
     vec2 fragCoord = FlutterFragCoord().xy;
     vec2 uv = fragCoord / uResolution;
@@ -49,43 +29,29 @@ void main() {
     // Distance from the current sweep center
     float dist = projection - sweep;
 
-    // Shimmer band shape: smooth bell curve
+    // Main band: smooth gaussian-like bell
     float halfWidth = uWidth * 0.5;
     float band = smoothstep(halfWidth, 0.0, abs(dist));
+    band = band * band; // sharpen peak
 
-    // Sharpen the peak for a convincing specular-like highlight
-    band = pow(band, 1.8);
+    // Soft halo glow around band
+    float halo = smoothstep(halfWidth * 3.0, 0.0, abs(dist)) * 0.15;
 
-    // Secondary softer halo around the main band
-    float halo = smoothstep(halfWidth * 2.5, 0.0, abs(dist)) * 0.2;
+    // Combine
+    float shimmer = band + halo;
 
-    // Subtle sparkle texture within the band
-    float sparkleScale = 40.0;
-    float sparkle = noise(uv * sparkleScale + uTime * 2.0);
-    sparkle = smoothstep(0.55, 0.9, sparkle) * 0.4;
-
-    // Combine band + halo + sparkle
-    float shimmer = band + halo + sparkle * band;
-
-    // Edge fade: soften near the widget edges to avoid harsh cutoff
-    float edgeFadeX = smoothstep(0.0, 0.05, uv.x) * smoothstep(1.0, 0.95, uv.x);
-    float edgeFadeY = smoothstep(0.0, 0.05, uv.y) * smoothstep(1.0, 0.95, uv.y);
-    float edgeFade = edgeFadeX * edgeFadeY;
-
+    // Edge fade to avoid hard cutoff at widget borders
+    float edgeFade = smoothstep(0.0, 0.08, uv.x) * smoothstep(1.0, 0.92, uv.x)
+                   * smoothstep(0.0, 0.08, uv.y) * smoothstep(1.0, 0.92, uv.y);
     shimmer *= edgeFade;
 
-    // Perpendicular gradient: shimmer is brightest at center, fades at edges
+    // Perpendicular fade: brightest at center line, fades at edges
     vec2 perpDir = vec2(-dir.y, dir.x);
     float perpDist = abs(dot(uv - 0.5, perpDir));
-    float perpFade = smoothstep(0.6, 0.0, perpDist);
-    shimmer *= 0.6 + perpFade * 0.4;
+    shimmer *= smoothstep(0.5, 0.0, perpDist);
 
     shimmer = clamp(shimmer, 0.0, 1.0);
 
-    // Apply color
     vec3 color = uColor * shimmer;
-    float alpha = shimmer * uColor.r * 0.5 + shimmer * uColor.g * 0.3 + shimmer * uColor.b * 0.2;
-    alpha = shimmer;
-
-    fragColor = vec4(color * alpha, alpha);
+    fragColor = vec4(color, shimmer);
 }

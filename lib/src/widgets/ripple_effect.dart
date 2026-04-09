@@ -124,16 +124,15 @@ class _RippleEffectState extends State<RippleEffect>
     final localPosition = details.localPosition;
     final size = box.size;
 
-    setState(() {
-      _touchX = (localPosition.dx / size.width).clamp(0.0, 1.0);
-      _touchY = (localPosition.dy / size.height).clamp(0.0, 1.0);
-      _shaderEnabled = true;
-    });
+    _touchX = (localPosition.dx / size.width).clamp(0.0, 1.0);
+    _touchY = (localPosition.dy / size.height).clamp(0.0, 1.0);
 
-    // Reset and play forward — handles rapid successive taps.
-    _controller
-      ..reset()
-      ..forward();
+    // Reset first — this fires status listener synchronously which would
+    // set _shaderEnabled = false. We set it to true AFTER reset.
+    _controller.reset();
+
+    setState(() => _shaderEnabled = true);
+    _controller.forward();
 
     widget.onTap?.call();
   }
