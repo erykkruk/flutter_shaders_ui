@@ -60,7 +60,7 @@ class GlowOrb extends StatelessWidget {
     this.pulseSpeed = _defaultPulseSpeed,
     this.enabled = true,
     this.child,
-  })  : _bouncing = false,
+  })  : _mode = _GlowOrbMode.static,
         _bounceSpeed = _defaultBounceSpeed;
 
   /// Creates a glowing orb that bounces off the container edges.
@@ -79,9 +79,33 @@ class GlowOrb extends StatelessWidget {
     this.enabled = true,
     this.child,
     double speed = _defaultBounceSpeed,
-  })  : _bouncing = true,
+  })  : _mode = _GlowOrbMode.bouncing,
         _bounceSpeed = speed,
         position = const Offset(0.5, 0.5);
+
+  /// Creates a glowing orb that can be dragged around by the user.
+  ///
+  /// The orb starts at [position] and follows the user's finger/pointer.
+  /// Great for interactive UIs where the user controls the light source.
+  ///
+  /// ```dart
+  /// GlowOrb.draggable(
+  ///   color: Colors.orange,
+  ///   radius: 0.12,
+  ///   child: MyContent(),
+  /// )
+  /// ```
+  const GlowOrb.draggable({
+    super.key,
+    this.position = const Offset(0.5, 0.5),
+    this.color = Colors.orange,
+    this.radius = _defaultRadius,
+    this.glowIntensity = _defaultGlowIntensity,
+    this.pulseSpeed = _defaultPulseSpeed,
+    this.enabled = true,
+    this.child,
+  })  : _mode = _GlowOrbMode.draggable,
+        _bounceSpeed = _defaultBounceSpeed;
 
   /// Normalized position of the orb center (0-1 on both axes).
   ///
@@ -108,34 +132,47 @@ class GlowOrb extends StatelessWidget {
   /// Optional child widget rendered behind the shader effect.
   final Widget? child;
 
-  final bool _bouncing;
+  final _GlowOrbMode _mode;
   final double _bounceSpeed;
 
   @override
   Widget build(BuildContext context) {
-    if (_bouncing) {
-      return _BouncingGlowOrb(
-        color: color,
-        radius: radius,
-        glowIntensity: glowIntensity,
-        pulseSpeed: pulseSpeed,
-        enabled: enabled,
-        bounceSpeed: _bounceSpeed,
-        child: child,
-      );
+    switch (_mode) {
+      case _GlowOrbMode.bouncing:
+        return _BouncingGlowOrb(
+          color: color,
+          radius: radius,
+          glowIntensity: glowIntensity,
+          pulseSpeed: pulseSpeed,
+          enabled: enabled,
+          bounceSpeed: _bounceSpeed,
+          child: child,
+        );
+      case _GlowOrbMode.draggable:
+        return _DraggableGlowOrb(
+          initialPosition: position,
+          color: color,
+          radius: radius,
+          glowIntensity: glowIntensity,
+          pulseSpeed: pulseSpeed,
+          enabled: enabled,
+          child: child,
+        );
+      case _GlowOrbMode.static:
+        return _StaticGlowOrb(
+          position: position,
+          color: color,
+          radius: radius,
+          glowIntensity: glowIntensity,
+          pulseSpeed: pulseSpeed,
+          enabled: enabled,
+          child: child,
+        );
     }
-
-    return _StaticGlowOrb(
-      position: position,
-      color: color,
-      radius: radius,
-      glowIntensity: glowIntensity,
-      pulseSpeed: pulseSpeed,
-      enabled: enabled,
-      child: child,
-    );
   }
 }
+
+enum _GlowOrbMode { static, bouncing, draggable }
 
 // ---------------------------------------------------------------------------
 // Static orb -- position controlled externally
@@ -304,6 +341,83 @@ class _BouncingGlowOrbState extends State<_BouncingGlowOrb>
       pulseSpeed: widget.pulseSpeed,
       enabled: widget.enabled,
       child: widget.child,
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Draggable orb -- position controlled by user gesture
+// ---------------------------------------------------------------------------
+
+class _DraggableGlowOrb extends StatefulWidget {
+  const _DraggableGlowOrb({
+    required this.initialPosition,
+    required this.color,
+    required this.radius,
+    required this.glowIntensity,
+    required this.pulseSpeed,
+    required this.enabled,
+    this.child,
+  });
+
+  final Offset initialPosition;
+  final Color color;
+  final double radius;
+  final double glowIntensity;
+  final double pulseSpeed;
+  final bool enabled;
+  final Widget? child;
+
+  @override
+  State<_DraggableGlowOrb> createState() => _DraggableGlowOrbState();
+}
+
+class _DraggableGlowOrbState extends State<_DraggableGlowOrb> {
+  late double _px;
+  late double _py;
+
+  @override
+  void initState() {
+    super.initState();
+    _px = widget.initialPosition.dx;
+    _py = widget.initialPosition.dy;
+  }
+
+  void _onPanStart(DragStartDetails details) {
+    _updatePosition(details.localPosition);
+  }
+
+  void _onPanUpdate(DragUpdateDetails details) {
+    _updatePosition(details.localPosition);
+  }
+
+  void _updatePosition(Offset localPosition) {
+    final box = context.findRenderObject() as RenderBox?;
+    if (box == null) return;
+
+    final size = box.size;
+    setState(() {
+      _px = (localPosition.dx / size.width).clamp(0.0, 1.0);
+      _py = (localPosition.dy / size.height).clamp(0.0, 1.0);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onPanStart: _onPanStart,
+      onPanUpdate: _onPanUpdate,
+      onTapDown: (details) => _updatePosition(details.localPosition),
+      behavior: HitTestBehavior.opaque,
+      child: _StaticGlowOrb(
+        position: Offset(_px, _py),
+        color: widget.color,
+        radius: widget.radius,
+        glowIntensity: widget.glowIntensity,
+        pulseSpeed: widget.pulseSpeed,
+        enabled: widget.enabled,
+        child: widget.child,
+      ),
     );
   }
 }
