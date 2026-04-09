@@ -1,0 +1,32 @@
+name: flutter_shaders_ui
+description: >-
+  Collection of beautiful, ready-to-use Flutter widgets powered by GLSL
+  fragment shaders. Blur, glow, noise, gradients and more.
+version: 0.1.0
+
+homepage: https://github.com/erykkruk/flutter_shaders_ui
+repository: https://github.com/erykkruk/flutter_shaders_ui
+issue_tracker: https://github.com/erykkruk/flutter_shaders_ui/issues
+
+topics:
+  - shader
+  - glsl
+  - ui
+  - widget
+  - effects
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  shaders: []
