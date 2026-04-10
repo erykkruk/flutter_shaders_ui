@@ -25,11 +25,7 @@ class ActivityScreen extends StatelessWidget {
 
         // Very subtle snow for ambience
         Positioned.fill(
-          child: SnowEffect(
-            density: 0.15,
-            speed: 0.3,
-            size: 0.3,
-          ),
+          child: SnowEffect(density: 0.15, speed: 0.3, size: 0.3),
         ),
 
         // Main content
@@ -172,10 +168,7 @@ class ActivityScreen extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _FilterChip extends StatelessWidget {
-  const _FilterChip({
-    required this.label,
-    required this.isActive,
-  });
+  const _FilterChip({required this.label, required this.isActive});
 
   final String label;
   final bool isActive;
@@ -253,8 +246,9 @@ class _NotificationCard extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
-                          fontWeight:
-                              isUnread ? FontWeight.w600 : FontWeight.w400,
+                          fontWeight: isUnread
+                              ? FontWeight.w600
+                              : FontWeight.w400,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -275,20 +269,14 @@ class _NotificationCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   message,
-                  style: const TextStyle(
-                    color: Colors.white38,
-                    fontSize: 13,
-                  ),
+                  style: const TextStyle(color: Colors.white38, fontSize: 13),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   time,
-                  style: const TextStyle(
-                    color: Colors.white24,
-                    fontSize: 11,
-                  ),
+                  style: const TextStyle(color: Colors.white24, fontSize: 11),
                 ),
               ],
             ),

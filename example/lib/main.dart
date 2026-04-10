@@ -9,6 +9,7 @@ import 'playground/pulse_playground.dart';
 import 'playground/ripple_playground.dart';
 import 'playground/shimmer_playground.dart';
 import 'playground/snow_playground.dart';
+import 'playground/water_playground.dart';
 import 'playground/wave_playground.dart';
 import 'showcase/showcase_app.dart';
 
@@ -284,6 +285,12 @@ class GalleryHomeScreen extends StatelessWidget {
       destination: GlassPlayground(),
     ),
     _ShaderCard(
+      title: 'Water',
+      icon: Icons.water,
+      gradient: [Color(0xFF006064), Color(0xFF26C6DA)],
+      destination: WaterPlayground(),
+    ),
+    _ShaderCard(
       title: 'Wave',
       icon: Icons.waves,
       gradient: [Color(0xFF0D47A1), Color(0xFF00BCD4)],
@@ -403,4 +410,3 @@ class _ShaderPageRoute extends PageRouteBuilder {
         },
       );
 }
-

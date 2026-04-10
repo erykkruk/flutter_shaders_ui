@@ -90,9 +90,7 @@ class ExploreScreen extends StatelessWidget {
           child: Stack(
             children: [
               // Dark base
-              Positioned.fill(
-                child: Container(color: const Color(0xFF1A0500)),
-              ),
+              Positioned.fill(child: Container(color: const Color(0xFF1A0500))),
 
               // Fire effect as background
               Positioned.fill(

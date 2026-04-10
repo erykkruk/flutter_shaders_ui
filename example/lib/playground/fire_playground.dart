@@ -20,10 +20,7 @@ class _FirePlaygroundState extends State<FirePlayground> {
       title: 'Fire Effect',
       effect: Container(
         color: const Color(0xFF1A0A00),
-        child: FireEffect(
-          intensity: _intensity,
-          speed: _speed,
-        ),
+        child: FireEffect(intensity: _intensity, speed: _speed),
       ),
       sliders: [
         ParamSlider(

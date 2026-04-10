@@ -16,4 +16,5 @@ export 'src/widgets/pulse_effect.dart';
 export 'src/widgets/ripple_effect.dart';
 export 'src/widgets/shimmer_effect.dart';
 export 'src/widgets/snow_effect.dart';
+export 'src/widgets/water_effect.dart';
 export 'src/widgets/wave_background.dart';

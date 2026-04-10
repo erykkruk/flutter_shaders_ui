@@ -40,8 +40,7 @@ class ParamSlider extends StatelessWidget {
                 thumbColor: Colors.white,
                 overlayColor: const Color(0xFF6366F1).withValues(alpha: 0.2),
                 trackHeight: 3,
-                thumbShape:
-                    const RoundSliderThumbShape(enabledThumbRadius: 7),
+                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
               ),
               child: Slider(
                 value: value,
@@ -97,8 +96,8 @@ class PlaygroundShell extends StatelessWidget {
               elevation: 0,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios),
-                onPressed: () => Navigator.of(context, rootNavigator: true)
-                    .pop(),
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
               ),
               actions: [
                 IconButton(

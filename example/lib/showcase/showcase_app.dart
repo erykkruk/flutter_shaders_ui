@@ -28,10 +28,7 @@ class _ShowcaseAppState extends State<ShowcaseApp> {
       body: Stack(
         children: [
           // Screen content
-          IndexedStack(
-            index: _currentIndex,
-            children: _screens,
-          ),
+          IndexedStack(index: _currentIndex, children: _screens),
 
           // Floating bottom nav
           Positioned(
@@ -42,10 +39,7 @@ class _ShowcaseAppState extends State<ShowcaseApp> {
               top: false,
               child: Container(
                 margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1A1D2E).withValues(alpha: 0.95),
                   borderRadius: BorderRadius.circular(28),

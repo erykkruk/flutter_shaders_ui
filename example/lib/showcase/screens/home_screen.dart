@@ -125,10 +125,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Text(
                   'Good morning,',
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(color: Colors.white54, fontSize: 13),
                 ),
                 Text(
                   'Eryk',
@@ -417,10 +414,7 @@ class _StatCard extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               label,
-              style: const TextStyle(
-                color: Colors.white54,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: Colors.white54, fontSize: 12),
             ),
           ],
         ),
@@ -525,10 +519,7 @@ class _ActivityTile extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    color: Colors.white38,
-                    fontSize: 12,
-                  ),
+                  style: const TextStyle(color: Colors.white38, fontSize: 12),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -537,10 +528,7 @@ class _ActivityTile extends StatelessWidget {
           ),
           Text(
             time,
-            style: const TextStyle(
-              color: Colors.white30,
-              fontSize: 11,
-            ),
+            style: const TextStyle(color: Colors.white30, fontSize: 11),
           ),
         ],
       ),

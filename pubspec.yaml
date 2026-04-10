@@ -38,4 +38,5 @@ flutter:
     - shaders/ripple.frag
     - shaders/shimmer.frag
     - shaders/snow.frag
+    - shaders/water.frag
     - shaders/wave.frag

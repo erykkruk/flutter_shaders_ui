@@ -257,18 +257,12 @@ class ProfileScreen extends StatelessWidget {
                       SizedBox(height: 2),
                       Text(
                         'Verified pub.dev publisher',
-                        style: TextStyle(
-                          color: Colors.white38,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.white38, fontSize: 12),
                       ),
                     ],
                   ),
                 ),
-                const Icon(
-                  Icons.chevron_right,
-                  color: Colors.white24,
-                ),
+                const Icon(Icons.chevron_right, color: Colors.white24),
               ],
             ),
           ),
@@ -404,10 +398,7 @@ class _StatItem extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(
-            color: Colors.white38,
-            fontSize: 12,
-          ),
+          style: const TextStyle(color: Colors.white38, fontSize: 12),
         ),
       ],
     );
@@ -524,10 +515,7 @@ class _SettingsTile extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-              ),
+              style: const TextStyle(color: Colors.white, fontSize: 15),
             ),
           ),
           const Icon(Icons.chevron_right, color: Colors.white24, size: 20),

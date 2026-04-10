@@ -117,12 +117,14 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
     }
 
     final shaderWidget = RepaintBoundary(
-      child: CustomPaint(
-        willChange: true,
-        painter: _ShaderEffectPainter(
-          program: _program!,
-          time: _time,
-          uniformSetter: widget.uniformSetter,
+      child: SizedBox.expand(
+        child: CustomPaint(
+          willChange: true,
+          painter: _ShaderEffectPainter(
+            program: _program!,
+            time: _time,
+            uniformSetter: widget.uniformSetter,
+          ),
         ),
       ),
     );

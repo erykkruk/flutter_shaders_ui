@@ -27,11 +27,7 @@ class _SnowPlaygroundState extends State<SnowPlayground> {
             colors: [Color(0xFF0D47A1), Color(0xFF1A237E)],
           ),
         ),
-        child: SnowEffect(
-          density: _density,
-          speed: _speed,
-          size: _size,
-        ),
+        child: SnowEffect(density: _density, speed: _speed, size: _size),
       ),
       sliders: [
         ParamSlider(
