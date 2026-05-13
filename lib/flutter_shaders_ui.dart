@@ -3,7 +3,7 @@
 ///
 /// Provides easy-to-use shader effects for Flutter UI — blur, glow, noise,
 /// gradients and more.
-library flutter_shaders_ui;
+library;
 
 export 'src/core/shader_cache.dart';
 export 'src/core/shader_effect_widget.dart';
