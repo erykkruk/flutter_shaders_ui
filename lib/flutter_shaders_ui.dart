@@ -3,6 +3,19 @@
 ///
 /// Provides easy-to-use shader effects for Flutter UI — blur, glow, noise,
 /// gradients and more.
+///
+/// ## Available widgets
+///
+/// - [AuroraEffect] — animated aurora/northern-lights background.
+/// - [FireEffect] — flickering flame effect.
+/// - [GlassEffect] — frosted-glass blur overlay.
+/// - [GlowOrb] — positionable glowing orb (static or bouncing).
+/// - [PulseEffect] — breathing pulse highlight.
+/// - [RippleEffect] — expanding ripple distortion.
+/// - [ShimmerEffect] — sweeping shimmer for placeholders.
+/// - [SnowEffect] — falling snow particles.
+/// - [WaterEffect] — animated water surface distortion.
+/// - [WaveBackground] — animated wave gradient background.
 library;
 
 export 'src/core/shader_cache.dart';
