@@ -16,10 +16,10 @@ Collection of beautiful, ready-to-use Flutter widgets powered by GLSL fragment s
   </tr>
   <tr>
     <td align="center">
-      <img src="https://raw.githubusercontent.com/erykkruk/flutter_shaders_ui/main/doc/media/demo_effects.gif" width="240" alt="Shader effects with live sliders — snow, fire, water, glow orb" />
+      <img src="https://raw.githubusercontent.com/erykkruk/flutter_shaders_ui/main/doc/media/demo_effects_v2.gif" width="240" alt="Shader effects with live sliders — snow, fire, water, glow orb" />
     </td>
     <td align="center">
-      <img src="https://raw.githubusercontent.com/erykkruk/flutter_shaders_ui/main/doc/media/demo_app.gif" width="240" alt="Example app — home dashboard, effect explorer and gallery" />
+      <img src="https://raw.githubusercontent.com/erykkruk/flutter_shaders_ui/main/doc/media/demo_app_v2.gif" width="240" alt="Example app — home dashboard, effect explorer and gallery" />
     </td>
   </tr>
 </table>
@@ -30,7 +30,7 @@ Collection of beautiful, ready-to-use Flutter widgets powered by GLSL fragment s
 
 ```yaml
 dependencies:
-  flutter_shaders_ui: ^1.0.0
+  flutter_shaders_ui: ^1.0.1
 ```
 
 ## Quick Start
