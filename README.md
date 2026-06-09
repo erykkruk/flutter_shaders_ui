@@ -7,11 +7,30 @@ Collection of beautiful, ready-to-use Flutter widgets powered by GLSL fragment s
 
 **Zero external dependencies** — uses only the Flutter SDK.
 
+## Demo
+
+<table>
+  <tr>
+    <td align="center"><b>Effects &amp; live controls</b></td>
+    <td align="center"><b>Example gallery app</b></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://raw.githubusercontent.com/erykkruk/flutter_shaders_ui/main/doc/media/demo_effects.gif" width="240" alt="Shader effects with live sliders — snow, fire, water, glow orb" />
+    </td>
+    <td align="center">
+      <img src="https://raw.githubusercontent.com/erykkruk/flutter_shaders_ui/main/doc/media/demo_app.gif" width="240" alt="Example app — home dashboard, effect explorer and gallery" />
+    </td>
+  </tr>
+</table>
+
+> The full example app lives in [`example/`](example) — run `flutter run` inside it to try every effect with live controls.
+
 ## Installation
 
 ```yaml
 dependencies:
-  flutter_shaders_ui: ^0.1.1
+  flutter_shaders_ui: ^1.0.0
 ```
 
 ## Quick Start
