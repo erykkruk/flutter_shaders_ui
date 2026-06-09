@@ -1,3 +1,18 @@
+# NOTE: when a .pubignore exists, pub ignores .gitignore entirely — so every
+# build/tooling artifact must be repeated here, otherwise it ships in the package.
+
+# Build & tooling artifacts (mirrors .gitignore)
+.dart_tool/
+.packages
+build/
+pubspec.lock
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+.idea/
+.DS_Store
+doc/api/
+
 # Demo preview GIFs are served from raw.githubusercontent in the README,
 # so they don't need to ship inside the published package archive.
 doc/media/
