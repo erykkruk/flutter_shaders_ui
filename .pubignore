@@ -1,0 +1,3 @@
+# Demo preview GIFs are served from raw.githubusercontent in the README,
+# so they don't need to ship inside the published package archive.
+doc/media/

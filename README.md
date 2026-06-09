@@ -53,7 +53,7 @@ Collection of beautiful, ready-to-use Flutter widgets powered by GLSL fragment s
 
 ```yaml
 dependencies:
-  flutter_shaders_ui: ^1.0.2
+  flutter_shaders_ui: ^1.0.3
 ```
 
 ## Quick Start
