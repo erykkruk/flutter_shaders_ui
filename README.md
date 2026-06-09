@@ -9,28 +9,51 @@ Collection of beautiful, ready-to-use Flutter widgets powered by GLSL fragment s
 
 ## Demo
 
+### Effects & live controls
+
 <table>
   <tr>
-    <td align="center"><b>Effects &amp; live controls</b></td>
-    <td align="center"><b>Example gallery app</b></td>
+    <td align="center"><b>Snow · Fire · Glow</b></td>
+    <td align="center"><b>Water · Gallery · Aurora</b></td>
+    <td align="center"><b>Ripple · Glow orb</b></td>
   </tr>
   <tr>
     <td align="center">
-      <img src="https://raw.githubusercontent.com/erykkruk/flutter_shaders_ui/main/doc/media/demo_effects_v2.gif" width="240" alt="Shader effects with live sliders — snow, fire, water, glow orb" />
+      <img src="https://raw.githubusercontent.com/erykkruk/flutter_shaders_ui/main/doc/media/effects_1.gif" width="180" alt="Snow, fire and glow shader effects with live sliders" />
     </td>
     <td align="center">
-      <img src="https://raw.githubusercontent.com/erykkruk/flutter_shaders_ui/main/doc/media/demo_app_v2.gif" width="240" alt="Example app — home dashboard, effect explorer and gallery" />
+      <img src="https://raw.githubusercontent.com/erykkruk/flutter_shaders_ui/main/doc/media/effects_2.gif" width="180" alt="Water, gallery grid and aurora shader effects" />
+    </td>
+    <td align="center">
+      <img src="https://raw.githubusercontent.com/erykkruk/flutter_shaders_ui/main/doc/media/effects_3.gif" width="180" alt="Ripple and glow orb shader effects" />
     </td>
   </tr>
 </table>
 
-> The full example app lives in [`example/`](example) — run `flutter run` inside it to try every effect with live controls.
+### Example app
+
+<table>
+  <tr>
+    <td align="center"><b>Home dashboard</b></td>
+    <td align="center"><b>Explore &amp; gallery</b></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://raw.githubusercontent.com/erykkruk/flutter_shaders_ui/main/doc/media/app_1.gif" width="180" alt="Example app home dashboard and overview" />
+    </td>
+    <td align="center">
+      <img src="https://raw.githubusercontent.com/erykkruk/flutter_shaders_ui/main/doc/media/app_2.gif" width="180" alt="Example app explore screen and effect gallery" />
+    </td>
+  </tr>
+</table>
+
+> All clips are real-time recordings. The full example app lives in [`example/`](example) — run `flutter run` inside it to try every effect with live controls.
 
 ## Installation
 
 ```yaml
 dependencies:
-  flutter_shaders_ui: ^1.0.1
+  flutter_shaders_ui: ^1.0.2
 ```
 
 ## Quick Start
