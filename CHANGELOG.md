@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-07-10
+
+### Added
+- Links to the hosted documentation at
+  [codigee.com/open-source/flutter-shaders-ui](https://codigee.com/open-source/flutter-shaders-ui)
+  (overview, effects reference and custom-shaders guide) in the README. The
+  local `doc/` markdown files remain as the source.
+
 ## [1.1.0] - 2026-07-10
 
 ### Added
