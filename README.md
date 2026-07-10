@@ -7,6 +7,14 @@ Collection of beautiful, ready-to-use Flutter widgets powered by GLSL fragment s
 
 **Zero external dependencies** — uses only the Flutter SDK.
 
+## Documentation
+
+Full documentation is hosted at Codigee:
+
+- [Overview](https://codigee.com/open-source/flutter-shaders-ui) — what the package is and how to get started
+- [Effects reference](https://codigee.com/open-source/flutter-shaders-ui/effects) — every widget, its parameters and live examples
+- [Custom shaders](https://codigee.com/open-source/flutter-shaders-ui/custom) — build your own shader widgets on the base infrastructure
+
 ## Demo
 
 ### Effects & live controls
@@ -167,7 +175,7 @@ ShaderEffectWidget(
 )
 ```
 
-See the [full documentation](doc/README.md) for detailed widget docs and common patterns.
+See the [Effects reference](https://codigee.com/open-source/flutter-shaders-ui/effects) for detailed widget docs and common patterns — also available as [markdown source](doc/README.md).
 
 ## Requirements
 
