@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: "!startsWith(github.event.head_commit.message, 'chore(release)')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
+          fetch-depth: 0
+      - name: Determine version (auto-bump patch unless bumped in PR)
+        id: ver
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            BASE=${VERSION%%+*}
+            NEW="$(echo "$BASE" | cut -d. -f1).$(echo "$BASE" | cut -d. -f2).$(( $(echo "$BASE" | cut -d. -f3) + 1 ))"
+            sed -i "s/^version: .*/version: $NEW/" pubspec.yaml
+            printf '## %s\n\n- Maintenance release.\n\n' "$NEW" | cat - CHANGELOG.md > /tmp/cl && mv /tmp/cl CHANGELOG.md
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add pubspec.yaml CHANGELOG.md
+            git commit -m "chore(release): v$NEW"
+            git push origin main
+            VERSION=$NEW
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Tag and push
+        run: |
+          git tag "v${{ steps.ver.outputs.version }}"
+          git push origin "v${{ steps.ver.outputs.version }}"

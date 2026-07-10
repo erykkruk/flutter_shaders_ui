@@ -47,6 +47,7 @@ class ShaderEffectWidget extends StatefulWidget {
     this.uniformSetter,
     this.enabled = true,
     this.showAsOverlay = false,
+    this.timeScale = 1.0,
   });
 
   /// Path to the `.frag` shader asset.
@@ -64,6 +65,17 @@ class ShaderEffectWidget extends StatefulWidget {
   /// If `true`, shader renders as overlay on top of [child].
   /// If `false` (default), shader renders as background behind [child].
   final bool showAsOverlay;
+
+  /// Multiplier applied to the elapsed time fed into the `uTime` uniform.
+  ///
+  /// Controls the speed of the global animation clock for every shader,
+  /// which the per-widget `speed` uniforms cannot do:
+  ///
+  /// - `1.0` (default) runs at real time.
+  /// - `0.5` runs at half speed; `2.0` at double speed.
+  /// - `0.0` freezes the animation on its current frame.
+  /// - Negative values run the animation in reverse.
+  final double timeScale;
 
   @override
   State<ShaderEffectWidget> createState() => _ShaderEffectWidgetState();
@@ -90,7 +102,7 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
   }
 
   void _onTick(Duration elapsed) {
-    _time.value = elapsed.inMicroseconds / 1e6;
+    _time.value = elapsed.inMicroseconds / 1e6 * widget.timeScale;
   }
 
   @override

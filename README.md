@@ -152,6 +152,21 @@ For building custom shader widgets:
 | `ShaderCache` | Global cache for compiled `FragmentProgram` instances |
 | `ShaderPainter` | Reusable `CustomPainter` for rendering shaders to canvas |
 
+### Controlling the animation clock
+
+`ShaderEffectWidget.timeScale` multiplies the elapsed time fed into the
+`uTime` uniform, giving you control over the global animation clock that the
+per-widget `speed` uniforms cannot: `1.0` runs at real time, `0.5` at half
+speed, `0.0` freezes on the current frame, and negative values run in reverse.
+
+```dart
+ShaderEffectWidget(
+  assetPath: 'packages/flutter_shaders_ui/shaders/aurora.frag',
+  timeScale: 0.5, // half-speed animation
+  child: const Text('Slow aurora'),
+)
+```
+
 See the [full documentation](doc/README.md) for detailed widget docs and common patterns.
 
 ## Requirements
