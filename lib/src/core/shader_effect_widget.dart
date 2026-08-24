@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'shader_cache.dart';
+import 'shader_performance.dart';
 
 /// Callback to configure shader uniforms each frame.
 ///
@@ -48,6 +49,8 @@ class ShaderEffectWidget extends StatefulWidget {
     this.enabled = true,
     this.showAsOverlay = false,
     this.timeScale = 1.0,
+    this.maxFramesPerSecond,
+    this.respectReducedMotion,
   });
 
   /// Path to the `.frag` shader asset.
@@ -77,6 +80,20 @@ class ShaderEffectWidget extends StatefulWidget {
   /// - Negative values run the animation in reverse.
   final double timeScale;
 
+  /// Upper bound on repaints per second for this effect.
+  ///
+  /// Null defers to the nearest [ShaderPerformance] ancestor, and then to
+  /// the display refresh rate. A cap only skips repaints: the clock still
+  /// advances in real time, so the motion keeps its speed.
+  final int? maxFramesPerSecond;
+
+  /// Whether to freeze the animation when the platform asks for reduced
+  /// motion.
+  ///
+  /// Null defers to the nearest [ShaderPerformance] ancestor, which
+  /// defaults to honouring the request.
+  final bool? respectReducedMotion;
+
   @override
   State<ShaderEffectWidget> createState() => _ShaderEffectWidgetState();
 }
@@ -84,8 +101,29 @@ class ShaderEffectWidget extends StatefulWidget {
 class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
     with SingleTickerProviderStateMixin {
   ui.FragmentProgram? _program;
+
+  /// One shader instance for the widget's lifetime.
+  ///
+  /// Creating one per paint allocated a native object on every frame and
+  /// never released it; uniforms are meant to be rewritten between draws.
+  ui.FragmentShader? _shader;
   late final Ticker _ticker;
   final _time = ValueNotifier<double>(0);
+
+  /// Elapsed time of the last repaint, used to honour the frame cap.
+  Duration _lastFrame = Duration.zero;
+
+  ShaderPerformanceSettings _settings = const ShaderPerformanceSettings();
+  bool _reducedMotion = false;
+
+  /// Set when the shader could not be loaded, so the widget renders its
+  /// child instead of retrying every build.
+  bool _loadFailed = false;
+
+  /// Whether the shader failed to load and the effect degraded to its child.
+  ///
+  /// Exposed for tests and debug overlays.
+  bool get loadFailed => _loadFailed;
 
   @override
   void initState() {
@@ -95,45 +133,116 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
   }
 
   Future<void> _loadShader() async {
-    final program = await ShaderCache.load(widget.assetPath);
-    if (!mounted) return;
-    setState(() => _program = program);
-    if (widget.enabled) _ticker.start();
+    try {
+      final program = await ShaderCache.load(widget.assetPath);
+      if (!mounted) return;
+      setState(() {
+        _program = program;
+        _shader = program.fragmentShader();
+      });
+      _syncTicker();
+    } catch (error, stackTrace) {
+      // A missing or uncompilable shader must degrade to the child rather
+      // than take the whole subtree down: the effect is decoration, the
+      // child is content.
+      if (mounted) {
+        setState(() => _loadFailed = true);
+      }
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stackTrace,
+          library: 'flutter_shaders_ui',
+          context: ErrorDescription(
+            'while loading the shader "${widget.assetPath}"',
+          ),
+        ),
+      );
+    }
+  }
+
+  /// Whether the animation clock should advance at all.
+  bool get _shouldAnimate {
+    if (!widget.enabled || _program == null) return false;
+    final respectReduced =
+        widget.respectReducedMotion ?? _settings.respectReducedMotion;
+    // Reduced motion freezes the clock but keeps the effect rendered, so
+    // the design survives as a still image.
+    return !(respectReduced && _reducedMotion);
+  }
+
+  void _syncTicker() {
+    if (_shouldAnimate && !_ticker.isActive) {
+      _ticker.start();
+    } else if (!_shouldAnimate && _ticker.isActive) {
+      _ticker.stop();
+    }
+  }
+
+  /// Minimum gap between repaints, widget setting first.
+  Duration? get _frameInterval {
+    final perWidget = widget.maxFramesPerSecond;
+    if (perWidget != null) {
+      return Duration(microseconds: (1000000 / perWidget).round());
+    }
+    return _settings.minimumFrameInterval;
   }
 
   void _onTick(Duration elapsed) {
+    final interval = _frameInterval;
+    if (interval != null && elapsed - _lastFrame < interval) {
+      // Skip the repaint, but leave the clock alone: capping the frame rate
+      // must not slow the motion down.
+      return;
+    }
+    _lastFrame = elapsed;
     _time.value = elapsed.inMicroseconds / 1e6 * widget.timeScale;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _settings = ShaderPerformance.of(context);
+    _reducedMotion = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    _syncTicker();
   }
 
   @override
   void didUpdateWidget(ShaderEffectWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.enabled && !_ticker.isActive && _program != null) {
-      _ticker.start();
-    } else if (!widget.enabled && _ticker.isActive) {
-      _ticker.stop();
+    if (widget.assetPath != oldWidget.assetPath) {
+      _shader?.dispose();
+      _shader = null;
+      _program = null;
+      _loadFailed = false;
+      _lastFrame = Duration.zero;
+      _loadShader();
+      return;
     }
+    _syncTicker();
   }
 
   @override
   void dispose() {
     _ticker.dispose();
+    _shader?.dispose();
     _time.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.enabled || _program == null) {
+    final shader = _shader;
+    if (!widget.enabled || shader == null) {
       return widget.child ?? const SizedBox.shrink();
     }
 
     final shaderWidget = RepaintBoundary(
       child: SizedBox.expand(
         child: CustomPaint(
-          willChange: true,
+          willChange: _shouldAnimate,
           painter: _ShaderEffectPainter(
-            program: _program!,
+            shader: shader,
             time: _time,
             uniformSetter: widget.uniformSetter,
           ),
@@ -158,18 +267,19 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
 
 class _ShaderEffectPainter extends CustomPainter {
   _ShaderEffectPainter({
-    required this.program,
+    required this.shader,
     required this.time,
     this.uniformSetter,
   }) : super(repaint: time);
 
-  final ui.FragmentProgram program;
+  /// Owned by the widget state, not by this painter: painters are rebuilt
+  /// on every build, so allocating a shader here would leak one per build.
+  final ui.FragmentShader shader;
   final ValueNotifier<double> time;
   final ShaderUniformSetter? uniformSetter;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final shader = program.fragmentShader();
     final t = time.value;
 
     // Standard uniforms
@@ -190,5 +300,7 @@ class _ShaderEffectPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_ShaderEffectPainter oldDelegate) => true;
+  bool shouldRepaint(_ShaderEffectPainter oldDelegate) =>
+      oldDelegate.shader != shader ||
+      oldDelegate.uniformSetter != uniformSetter;
 }

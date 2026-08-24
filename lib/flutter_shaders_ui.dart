@@ -21,6 +21,7 @@ library;
 export 'src/core/shader_cache.dart';
 export 'src/core/shader_effect_widget.dart';
 export 'src/core/shader_painter.dart';
+export 'src/core/shader_performance.dart';
 export 'src/widgets/aurora_effect.dart';
 export 'src/widgets/fire_effect.dart';
 export 'src/widgets/glass_effect.dart';
