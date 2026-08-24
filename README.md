@@ -149,6 +149,43 @@ Stack(
 - **Zero cost when disabled** — `enabled: false` renders only `child`, no GPU work
 - **Ticker-based animation** — respects Flutter's frame scheduling
 - **RepaintBoundary** — isolates shader repaints from the widget tree
+- **One shader per widget** — uniforms are rewritten between draws, not a new `FragmentShader` per frame
+- **Frame-rate cap** — `maxFramesPerSecond` trades refresh rate for battery without slowing the motion
+- **Reduced motion** — animation freezes when the platform asks for it, the effect still renders
+
+### Capping the frame rate
+
+Shader effects repaint every frame, which on a 120 Hz display is twice the
+work a 60 Hz one does for visuals that rarely need it. Cap a whole subtree
+at once:
+
+```dart
+ShaderPerformance(
+  settings: const ShaderPerformanceSettings(maxFramesPerSecond: 30),
+  child: MyPage(),
+)
+```
+
+Or a single effect:
+
+```dart
+ShaderEffectWidget(
+  assetPath: 'packages/flutter_shaders_ui/shaders/aurora.frag',
+  maxFramesPerSecond: 24,
+  child: const Text('Calm aurora'),
+)
+```
+
+A cap only skips repaints: the clock still advances in real time, so the
+animation keeps its speed and just updates less often. A per-widget value
+wins over the inherited one.
+
+### Reduced motion
+
+When the platform asks for reduced motion, shader animation freezes on its
+first frame and the effect renders as a still image. Opt out for a specific
+effect with `respectReducedMotion: false`, or for a subtree through
+`ShaderPerformanceSettings(respectReducedMotion: false)`.
 
 ## Core API
 
@@ -159,6 +196,7 @@ For building custom shader widgets:
 | `ShaderEffectWidget` | Base widget: shader loading, time animation, uniform setup |
 | `ShaderCache` | Global cache for compiled `FragmentProgram` instances |
 | `ShaderPainter` | Reusable `CustomPainter` for rendering shaders to canvas |
+| `ShaderPerformance` / `ShaderPerformanceSettings` | Frame-rate cap and reduced-motion policy for a subtree |
 
 ### Controlling the animation clock
 

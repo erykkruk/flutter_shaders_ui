@@ -11,7 +11,7 @@ Flutter package z kolekcją gotowych UI widgetów opartych na GLSL fragment shad
 | Framework | Flutter | >= 3.10.0 |
 | Language | Dart | >= 3.0.0 |
 | Shaders | GLSL (Fragment Shaders) | ES 1.0 / 3.0 |
-| Linting | flutter_lints | ^4.0.0 |
+| Linting | flutter_lints | ^6.0.0 |
 | Testing | flutter_test | SDK |
 
 ## Development Commands

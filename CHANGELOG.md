@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-08-24
+
+### Added
+
+- **Frame-rate cap.** `ShaderPerformanceSettings.maxFramesPerSecond`, applied
+  to a subtree through the `ShaderPerformance` inherited widget or per widget
+  through `ShaderEffectWidget.maxFramesPerSecond`. Capping only skips
+  repaints; the animation clock still advances in real time, so lowering the
+  frame rate does not slow the motion down.
+- **Reduced-motion support.** Shader animation now freezes when the platform
+  asks for reduced motion (`MediaQuery.disableAnimationsOf`). The effect
+  still renders as a still image; only its clock stops. Opt out per widget
+  with `respectReducedMotion: false`.
+
+### Fixed
+
+- **A `FragmentShader` was allocated on every frame and never disposed.**
+  `ShaderEffectWidget` now creates one shader per widget, rewrites its
+  uniforms between draws, and disposes it in `dispose()`. This removes a
+  per-frame native allocation from every effect in the package.
+- **A failing shader no longer takes the subtree down.** A missing or
+  uncompilable asset degrades to rendering the child and is reported through
+  `FlutterError.reportError`, instead of throwing out of `initState`.
+- `shouldRepaint` no longer returns `true` unconditionally; repaints are
+  driven by the time notifier, as they were meant to be.
+- Changing `assetPath` now reloads the shader instead of keeping the old one.
+
+### Changed
+
+- `flutter_lints` raised to `^6.0.0`; the package analyzes clean under the
+  stricter rule set.
+
 ## [1.1.2] - 2026-07-10
 
 ### Changed
