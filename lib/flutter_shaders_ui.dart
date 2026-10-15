@@ -4,7 +4,16 @@
 /// Provides easy-to-use shader effects for Flutter UI — blur, glow, noise,
 /// gradients and more.
 ///
-/// ## Available widgets
+/// ## Everyday UI
+///
+/// - [ShaderSkeleton] and [SkeletonBone]: shimmering skeleton loading
+///   placeholders that follow the real layout.
+/// - [FrostedSurface]: backdrop-blurred frosted glass for cards, app bars
+///   and bottom sheets.
+/// - [AnimatedGradientBorder]: rotating gradient border with optional glow
+///   for buttons, cards and selected states.
+///
+/// ## Effects
 ///
 /// - [AuroraEffect] — animated aurora/northern-lights background.
 /// - [FireEffect] — flickering flame effect.
@@ -22,12 +31,15 @@ export 'src/core/shader_cache.dart';
 export 'src/core/shader_effect_widget.dart';
 export 'src/core/shader_painter.dart';
 export 'src/core/shader_performance.dart';
+export 'src/widgets/animated_gradient_border.dart';
 export 'src/widgets/aurora_effect.dart';
 export 'src/widgets/fire_effect.dart';
+export 'src/widgets/frosted_surface.dart';
 export 'src/widgets/glass_effect.dart';
 export 'src/widgets/glow_orb.dart';
 export 'src/widgets/pulse_effect.dart';
 export 'src/widgets/ripple_effect.dart';
+export 'src/widgets/shader_skeleton.dart';
 export 'src/widgets/shimmer_effect.dart';
 export 'src/widgets/snow_effect.dart';
 export 'src/widgets/water_effect.dart';

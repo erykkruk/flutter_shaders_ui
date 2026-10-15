@@ -19,16 +19,22 @@ class ShaderCache {
   ///
   /// If the shader is already loaded, returns the cached instance.
   /// If currently loading, awaits the same future (deduplication).
+  /// A failed load is not cached: the next call tries the asset again.
   static Future<ui.FragmentProgram> load(String assetPath) {
     if (_cache.containsKey(assetPath)) {
       return Future.value(_cache[assetPath]!);
     }
 
     return _pending.putIfAbsent(assetPath, () async {
-      final program = await ui.FragmentProgram.fromAsset(assetPath);
-      _cache[assetPath] = program;
-      _pending.remove(assetPath);
-      return program;
+      try {
+        final program = await ui.FragmentProgram.fromAsset(assetPath);
+        _cache[assetPath] = program;
+        return program;
+      } finally {
+        // Without this a failed load stayed pending forever, so every later
+        // call got the same error back and the asset could never be retried.
+        _pending.remove(assetPath);
+      }
     });
   }
 

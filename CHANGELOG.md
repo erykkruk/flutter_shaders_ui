@@ -5,6 +5,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-10-15
+
+### Added
+
+- **`ShaderSkeleton` and `SkeletonBone`.** Skeleton loading placeholders:
+  a shimmer sweep drawn only where the placeholder paints, theme-aware
+  colours, a cross-fade to the real content, pointer blocking and a
+  "Loading" semantics label while loading. Without a `placeholder`, the
+  child itself is used as the skeleton shape.
+- **`FrostedSurface`.** Frosted glass for cards, app bars, bottom sheets and
+  dialogs: real `BackdropFilter` blur, theme-aware tint and hairline border,
+  plus a fine frost grain from the glass shader that is static by default
+  (`animateFrost` makes it drift). Works on Skia and Impeller.
+- **`AnimatedGradientBorder`.** Rotating 1 to 4 colour gradient ring with an
+  optional soft glow, for selected cards, focused fields, premium or AI
+  actions. Toggling `enabled` keeps the layout stable.
+- **`ShaderEffectWidget.maskToChild`.** Paints the shader only where the
+  child has pixels (`ShaderMask` with `BlendMode.srcATop`).
+- New `skeleton.frag` and `gradient_border.frag` shaders.
+- Example app: Skeleton, Frosted and Gradient Border playgrounds, and a
+  `--dart-define=TOUR=true` mode that cycles through every playground.
+- README: one demo GIF per widget, recorded from the example app; pub.dev
+  screenshots for the new widgets.
+
+### Changed
+
+- `timeScale: 0` no longer repaints the same frame on every vsync: the
+  ticker is muted, so the frame is drawn once. Output is identical to
+  before (`uTime` stays `0`, and switching back resumes the real-time
+  clock exactly as it did).
+
+### Fixed
+
+- **A failed shader load is no longer cached forever.** `ShaderCache.load`
+  kept the failed future as "pending", so every later call for that asset
+  got the same error back and could never retry. The pending entry is now
+  removed whether the load succeeds or fails.
+- **A load that finishes after `assetPath` changed is discarded.**
+  `ShaderEffectWidget` could apply a superseded load on top of the current
+  one, rendering the previous shader and leaking the `FragmentShader` it
+  replaced. Load failures are also now reported against the asset that was
+  actually requested.
+
 ## [1.2.0] - 2026-08-24
 
 ### Added

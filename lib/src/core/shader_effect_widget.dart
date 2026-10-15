@@ -51,6 +51,7 @@ class ShaderEffectWidget extends StatefulWidget {
     this.timeScale = 1.0,
     this.maxFramesPerSecond,
     this.respectReducedMotion,
+    this.maskToChild = false,
   });
 
   /// Path to the `.frag` shader asset.
@@ -76,7 +77,9 @@ class ShaderEffectWidget extends StatefulWidget {
   ///
   /// - `1.0` (default) runs at real time.
   /// - `0.5` runs at half speed; `2.0` at double speed.
-  /// - `0.0` freezes the animation on its current frame.
+  /// - `0.0` renders the frame at time zero. It is drawn once and not
+  ///   repainted every vsync, so static effects (grain, frost) cost
+  ///   nothing after the first frame.
   /// - Negative values run the animation in reverse.
   final double timeScale;
 
@@ -93,6 +96,15 @@ class ShaderEffectWidget extends StatefulWidget {
   /// Null defers to the nearest [ShaderPerformance] ancestor, which
   /// defaults to honouring the request.
   final bool? respectReducedMotion;
+
+  /// If `true`, the shader is painted only where [child] has pixels,
+  /// replacing their colour (`BlendMode.srcATop` through a [ShaderMask]).
+  ///
+  /// This turns any layout into a mask for the effect, which is how
+  /// [ShaderSkeleton] recolours placeholder bones without lighting up the
+  /// gaps between them. When `true`, [showAsOverlay] is ignored and a
+  /// null [child] renders nothing.
+  final bool maskToChild;
 
   @override
   State<ShaderEffectWidget> createState() => _ShaderEffectWidgetState();
@@ -125,6 +137,10 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
   /// Exposed for tests and debug overlays.
   bool get loadFailed => _loadFailed;
 
+  /// Incremented on every load request, so a load that finishes after
+  /// [ShaderEffectWidget.assetPath] changed can tell it is stale.
+  int _loadGeneration = 0;
+
   @override
   void initState() {
     super.initState();
@@ -133,9 +149,13 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
   }
 
   Future<void> _loadShader() async {
+    final generation = ++_loadGeneration;
+    final assetPath = widget.assetPath;
     try {
-      final program = await ShaderCache.load(widget.assetPath);
-      if (!mounted) return;
+      final program = await ShaderCache.load(assetPath);
+      // A superseded load must not overwrite the current shader: it would
+      // render the previous asset and leak the shader it replaced.
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _program = program;
         _shader = program.fragmentShader();
@@ -145,7 +165,7 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
       // A missing or uncompilable shader must degrade to the child rather
       // than take the whole subtree down: the effect is decoration, the
       // child is content.
-      if (mounted) {
+      if (mounted && generation == _loadGeneration) {
         setState(() => _loadFailed = true);
       }
       FlutterError.reportError(
@@ -154,7 +174,7 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
           stack: stackTrace,
           library: 'flutter_shaders_ui',
           context: ErrorDescription(
-            'while loading the shader "${widget.assetPath}"',
+            'while loading the shader "$assetPath"',
           ),
         ),
       );
@@ -177,6 +197,19 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
     } else if (!_shouldAnimate && _ticker.isActive) {
       _ticker.stop();
     }
+    _syncFrozenClock();
+  }
+
+  /// A zero [ShaderEffectWidget.timeScale] always fed `uTime = 0`; muting
+  /// renders that same frame once instead of repainting it every vsync. A
+  /// muted ticker keeps counting, so unfreezing resumes exactly where the
+  /// unmuted clock would have been.
+  void _syncFrozenClock() {
+    final frozen = widget.timeScale == 0;
+    if (frozen && !_ticker.muted) {
+      _time.value = 0;
+    }
+    _ticker.muted = frozen;
   }
 
   /// Minimum gap between repaints, widget setting first.
@@ -237,6 +270,10 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
       return widget.child ?? const SizedBox.shrink();
     }
 
+    if (widget.maskToChild) {
+      return _buildMask(shader);
+    }
+
     final shaderWidget = RepaintBoundary(
       child: SizedBox.expand(
         child: CustomPaint(
@@ -263,6 +300,46 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
       children: children,
     );
   }
+
+  Widget _buildMask(ui.FragmentShader shader) {
+    final child = widget.child;
+    if (child == null) return const SizedBox.shrink();
+
+    return RepaintBoundary(
+      child: ValueListenableBuilder<double>(
+        valueListenable: _time,
+        child: child,
+        builder: (context, time, child) {
+          return ShaderMask(
+            blendMode: BlendMode.srcATop,
+            shaderCallback: (bounds) {
+              _setStandardUniforms(
+                shader,
+                bounds.size,
+                time,
+                widget.uniformSetter,
+              );
+              return shader;
+            },
+            child: child,
+          );
+        },
+      ),
+    );
+  }
+}
+
+void _setStandardUniforms(
+  ui.FragmentShader shader,
+  Size size,
+  double time,
+  ShaderUniformSetter? uniformSetter,
+) {
+  var i = 0;
+  shader.setFloat(i++, size.width); // uResolution.x
+  shader.setFloat(i++, size.height); // uResolution.y
+  shader.setFloat(i++, time); // uTime
+  uniformSetter?.call(shader, size, time, i);
 }
 
 class _ShaderEffectPainter extends CustomPainter {
@@ -280,18 +357,7 @@ class _ShaderEffectPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final t = time.value;
-
-    // Standard uniforms
-    var i = 0;
-    shader.setFloat(i++, size.width); // uResolution.x
-    shader.setFloat(i++, size.height); // uResolution.y
-    shader.setFloat(i++, t); // uTime
-
-    // Custom uniforms
-    if (uniformSetter != null) {
-      uniformSetter!(shader, size, t, i);
-    }
+    _setStandardUniforms(shader, size, time.value, uniformSetter);
 
     canvas.drawRect(
       Rect.fromLTWH(0, 0, size.width, size.height),

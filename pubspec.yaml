@@ -1,13 +1,21 @@
 name: flutter_shaders_ui
 description: >-
-  Collection of beautiful, ready-to-use Flutter widgets powered by GLSL
-  fragment shaders. Blur, glow, noise, gradients and more.
-version: 1.2.0
+  Ready-to-use Flutter widgets powered by GLSL fragment shaders: skeleton
+  loaders, frosted surfaces, gradient borders, glow, aurora, fire and more.
+version: 1.3.0
 
 homepage: https://github.com/erykkruk/flutter_shaders_ui
 repository: https://github.com/erykkruk/flutter_shaders_ui
 issue_tracker: https://github.com/erykkruk/flutter_shaders_ui/issues
 documentation: https://codigee.com/open-source/flutter-shaders-ui
+
+screenshots:
+  - description: ShaderSkeleton loading placeholder with a shimmer sweep.
+    path: doc/screenshots/shader_skeleton.gif
+  - description: FrostedSurface app bar, card and bottom bar over moving content.
+    path: doc/screenshots/frosted_surface.gif
+  - description: AnimatedGradientBorder marking a selected card and an AI button.
+    path: doc/screenshots/animated_gradient_border.gif
 
 topics:
   - shader
@@ -35,9 +43,11 @@ flutter:
     - shaders/fire.frag
     - shaders/glass.frag
     - shaders/glow_orb.frag
+    - shaders/gradient_border.frag
     - shaders/pulse.frag
     - shaders/ripple.frag
     - shaders/shimmer.frag
+    - shaders/skeleton.frag
     - shaders/snow.frag
     - shaders/water.frag
     - shaders/wave.frag
