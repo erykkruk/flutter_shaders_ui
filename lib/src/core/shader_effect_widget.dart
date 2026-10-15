@@ -51,6 +51,7 @@ class ShaderEffectWidget extends StatefulWidget {
     this.timeScale = 1.0,
     this.maxFramesPerSecond,
     this.respectReducedMotion,
+    this.maskToChild = false,
   });
 
   /// Path to the `.frag` shader asset.
@@ -76,7 +77,8 @@ class ShaderEffectWidget extends StatefulWidget {
   ///
   /// - `1.0` (default) runs at real time.
   /// - `0.5` runs at half speed; `2.0` at double speed.
-  /// - `0.0` freezes the animation on its current frame.
+  /// - `0.0` renders a still frame and stops repainting entirely, which
+  ///   makes static effects (grain, frost) free after the first frame.
   /// - Negative values run the animation in reverse.
   final double timeScale;
 
@@ -93,6 +95,15 @@ class ShaderEffectWidget extends StatefulWidget {
   /// Null defers to the nearest [ShaderPerformance] ancestor, which
   /// defaults to honouring the request.
   final bool? respectReducedMotion;
+
+  /// If `true`, the shader is painted only where [child] has pixels,
+  /// replacing their colour (`BlendMode.srcATop` through a [ShaderMask]).
+  ///
+  /// This turns any layout into a mask for the effect, which is how
+  /// [ShaderSkeleton] recolours placeholder bones without lighting up the
+  /// gaps between them. When `true`, [showAsOverlay] is ignored and a
+  /// null [child] renders nothing.
+  final bool maskToChild;
 
   @override
   State<ShaderEffectWidget> createState() => _ShaderEffectWidgetState();
@@ -172,6 +183,7 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
   /// Whether the animation clock should advance at all.
   bool get _shouldAnimate {
     if (!widget.enabled || _program == null) return false;
+    if (widget.timeScale == 0) return false;
     final respectReduced =
         widget.respectReducedMotion ?? _settings.respectReducedMotion;
     // Reduced motion freezes the clock but keeps the effect rendered, so
@@ -245,6 +257,10 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
       return widget.child ?? const SizedBox.shrink();
     }
 
+    if (widget.maskToChild) {
+      return _buildMask(shader);
+    }
+
     final shaderWidget = RepaintBoundary(
       child: SizedBox.expand(
         child: CustomPaint(
@@ -271,6 +287,46 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
       children: children,
     );
   }
+
+  Widget _buildMask(ui.FragmentShader shader) {
+    final child = widget.child;
+    if (child == null) return const SizedBox.shrink();
+
+    return RepaintBoundary(
+      child: ValueListenableBuilder<double>(
+        valueListenable: _time,
+        child: child,
+        builder: (context, time, child) {
+          return ShaderMask(
+            blendMode: BlendMode.srcATop,
+            shaderCallback: (bounds) {
+              _setStandardUniforms(
+                shader,
+                bounds.size,
+                time,
+                widget.uniformSetter,
+              );
+              return shader;
+            },
+            child: child,
+          );
+        },
+      ),
+    );
+  }
+}
+
+void _setStandardUniforms(
+  ui.FragmentShader shader,
+  Size size,
+  double time,
+  ShaderUniformSetter? uniformSetter,
+) {
+  var i = 0;
+  shader.setFloat(i++, size.width); // uResolution.x
+  shader.setFloat(i++, size.height); // uResolution.y
+  shader.setFloat(i++, time); // uTime
+  uniformSetter?.call(shader, size, time, i);
 }
 
 class _ShaderEffectPainter extends CustomPainter {
@@ -288,18 +344,7 @@ class _ShaderEffectPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final t = time.value;
-
-    // Standard uniforms
-    var i = 0;
-    shader.setFloat(i++, size.width); // uResolution.x
-    shader.setFloat(i++, size.height); // uResolution.y
-    shader.setFloat(i++, t); // uTime
-
-    // Custom uniforms
-    if (uniformSetter != null) {
-      uniformSetter!(shader, size, t, i);
-    }
+    _setStandardUniforms(shader, size, time.value, uniformSetter);
 
     canvas.drawRect(
       Rect.fromLTWH(0, 0, size.width, size.height),

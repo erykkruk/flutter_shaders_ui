@@ -3,15 +3,22 @@ import 'package:flutter_shaders_ui/flutter_shaders_ui.dart';
 
 import 'playground/aurora_playground.dart';
 import 'playground/fire_playground.dart';
+import 'playground/frosted_playground.dart';
 import 'playground/glass_playground.dart';
 import 'playground/glow_orb_playground.dart';
+import 'playground/gradient_border_playground.dart';
 import 'playground/pulse_playground.dart';
 import 'playground/ripple_playground.dart';
 import 'playground/shimmer_playground.dart';
+import 'playground/skeleton_playground.dart';
 import 'playground/snow_playground.dart';
 import 'playground/water_playground.dart';
 import 'playground/wave_playground.dart';
 import 'showcase/showcase_app.dart';
+import 'tour.dart';
+
+/// Cycles through every playground for recording README media.
+const bool _tourMode = bool.fromEnvironment('TOUR');
 
 void main() {
   runApp(const ShaderGalleryApp());
@@ -26,7 +33,7 @@ class ShaderGalleryApp extends StatelessWidget {
       title: 'Shader Gallery',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(useMaterial3: true),
-      home: const LauncherScreen(),
+      home: _tourMode ? const TourScreen() : const LauncherScreen(),
     );
   }
 }
@@ -260,6 +267,24 @@ class GalleryHomeScreen extends StatelessWidget {
   }
 
   List<Widget> get _cards => const [
+    _ShaderCard(
+      title: 'Skeleton',
+      icon: Icons.view_agenda_outlined,
+      gradient: [Color(0xFF1F242B), Color(0xFF4B5563)],
+      destination: SkeletonPlayground(),
+    ),
+    _ShaderCard(
+      title: 'Frosted',
+      icon: Icons.layers_outlined,
+      gradient: [Color(0xFF0F172A), Color(0xFFF472B6)],
+      destination: FrostedPlayground(),
+    ),
+    _ShaderCard(
+      title: 'Gradient Border',
+      icon: Icons.crop_square_rounded,
+      gradient: [Color(0xFF7C3AED), Color(0xFF06B6D4)],
+      destination: GradientBorderPlayground(),
+    ),
     _ShaderCard(
       title: 'Snow',
       icon: Icons.ac_unit,
