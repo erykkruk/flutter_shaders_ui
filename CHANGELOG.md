@@ -5,7 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.1] - 2026-10-15
+## [1.3.0] - 2026-10-15
+
+### Added
+
+- **`ShaderSkeleton` and `SkeletonBone`.** Skeleton loading placeholders:
+  a shimmer sweep drawn only where the placeholder paints, theme-aware
+  colours, a cross-fade to the real content, pointer blocking and a
+  "Loading" semantics label while loading. Without a `placeholder`, the
+  child itself is used as the skeleton shape.
+- **`FrostedSurface`.** Frosted glass for cards, app bars, bottom sheets and
+  dialogs: real `BackdropFilter` blur, theme-aware tint and hairline border,
+  plus a fine frost grain from the glass shader that is static by default
+  (`animateFrost` makes it drift). Works on Skia and Impeller.
+- **`AnimatedGradientBorder`.** Rotating 1 to 4 colour gradient ring with an
+  optional soft glow, for selected cards, focused fields, premium or AI
+  actions. Toggling `enabled` keeps the layout stable.
+- **`ShaderEffectWidget.maskToChild`.** Paints the shader only where the
+  child has pixels (`ShaderMask` with `BlendMode.srcATop`).
+- New `skeleton.frag` and `gradient_border.frag` shaders.
+- Example app: Skeleton, Frosted and Gradient Border playgrounds, and a
+  `--dart-define=TOUR=true` mode that cycles through every playground.
+- README: one demo GIF per widget, recorded from the example app; pub.dev
+  screenshots for the new widgets.
+
+### Changed
+
+- `timeScale: 0` now renders a still frame and stops the ticker instead of
+  repainting the same frame on every vsync.
 
 ### Fixed
 

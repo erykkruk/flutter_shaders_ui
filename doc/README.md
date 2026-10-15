@@ -4,6 +4,14 @@ GPU-accelerated shader-based UI widgets for Flutter. Zero dependencies, zero nat
 
 ## Widget Catalog
 
+### Everyday UI
+
+| Widget | Description | Doc |
+|--------|-------------|-----|
+| [ShaderSkeleton](everyday_ui.md#shaderskeleton) | Skeleton placeholder with a shimmer sweep | Lists, cards, profile headers while data loads |
+| [FrostedSurface](everyday_ui.md#frostedsurface) | Backdrop-blurred frosted glass | App bars, cards, bottom sheets, dialogs |
+| [AnimatedGradientBorder](everyday_ui.md#animatedgradientborder) | Rotating gradient ring with glow | Selected cards, focused fields, premium and AI actions |
+
 ### Backgrounds
 
 | Widget | Description | Doc |
