@@ -31,8 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `timeScale: 0` now renders a still frame and stops the ticker instead of
-  repainting the same frame on every vsync.
+- `timeScale: 0` no longer repaints the same frame on every vsync: the
+  ticker is muted, so the frame is drawn once. Output is identical to
+  before (`uTime` stays `0`, and switching back resumes the real-time
+  clock exactly as it did).
 
 ### Fixed
 

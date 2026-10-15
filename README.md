@@ -270,7 +270,7 @@ Stack(
 - **One shader per widget** — uniforms are rewritten between draws, not a new `FragmentShader` per frame
 - **Frame-rate cap** — `maxFramesPerSecond` trades refresh rate for battery without slowing the motion
 - **Reduced motion** — animation freezes when the platform asks for it, the effect still renders
-- **Still frames are free** - `timeScale: 0` renders once and stops the ticker
+- **Still frames are free** - `timeScale: 0` renders the first frame once instead of on every vsync
 
 ### Capping the frame rate
 
@@ -326,8 +326,8 @@ where the child has pixels (`BlendMode.srcATop`), which is how
 `ShaderEffectWidget.timeScale` multiplies the elapsed time fed into the
 `uTime` uniform, giving you control over the global animation clock that the
 per-widget `speed` uniforms cannot: `1.0` runs at real time, `0.5` at half
-speed, `0.0` renders a still frame and stops repainting, and negative values
-run in reverse.
+speed, `0.0` holds the first frame (drawn once, not on every vsync), and
+negative values run in reverse.
 
 ```dart
 ShaderEffectWidget(

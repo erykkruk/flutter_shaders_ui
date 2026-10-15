@@ -77,8 +77,9 @@ class ShaderEffectWidget extends StatefulWidget {
   ///
   /// - `1.0` (default) runs at real time.
   /// - `0.5` runs at half speed; `2.0` at double speed.
-  /// - `0.0` renders a still frame and stops repainting entirely, which
-  ///   makes static effects (grain, frost) free after the first frame.
+  /// - `0.0` renders the frame at time zero. It is drawn once and not
+  ///   repainted every vsync, so static effects (grain, frost) cost
+  ///   nothing after the first frame.
   /// - Negative values run the animation in reverse.
   final double timeScale;
 
@@ -183,7 +184,6 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
   /// Whether the animation clock should advance at all.
   bool get _shouldAnimate {
     if (!widget.enabled || _program == null) return false;
-    if (widget.timeScale == 0) return false;
     final respectReduced =
         widget.respectReducedMotion ?? _settings.respectReducedMotion;
     // Reduced motion freezes the clock but keeps the effect rendered, so
@@ -197,6 +197,19 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
     } else if (!_shouldAnimate && _ticker.isActive) {
       _ticker.stop();
     }
+    _syncFrozenClock();
+  }
+
+  /// A zero [ShaderEffectWidget.timeScale] always fed `uTime = 0`; muting
+  /// renders that same frame once instead of repainting it every vsync. A
+  /// muted ticker keeps counting, so unfreezing resumes exactly where the
+  /// unmuted clock would have been.
+  void _syncFrozenClock() {
+    final frozen = widget.timeScale == 0;
+    if (frozen && !_ticker.muted) {
+      _time.value = 0;
+    }
+    _ticker.muted = frozen;
   }
 
   /// Minimum gap between repaints, widget setting first.

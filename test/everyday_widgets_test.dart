@@ -117,6 +117,30 @@ void main() {
     });
   });
 
+  group('ShaderEffectWidget.timeScale switching', () {
+    Widget host(double timeScale) => ShaderEffectWidget(
+          assetPath: _loadableSnowAsset,
+          timeScale: timeScale,
+          child: const SizedBox(width: 100, height: 20),
+        );
+
+    testWidgets('resumes repainting when unfrozen', (tester) async {
+      // Arrange
+      await _pumpApp(tester, host(1));
+      await tester.pump();
+      await _pumpApp(tester, host(0));
+      await tester.pump();
+      expect(tester.binding.transientCallbackCount, 0);
+
+      // Act
+      await _pumpApp(tester, host(1));
+      await tester.pump();
+
+      // Assert
+      expect(tester.binding.transientCallbackCount, greaterThan(0));
+    });
+  });
+
   group('ShaderSkeleton', () {
     testWidgets('shows the placeholder and hides content while loading',
         (tester) async {
