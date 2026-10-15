@@ -212,7 +212,9 @@ void main() {
         const Directionality(
           textDirection: TextDirection.ltr,
           child: ShaderEffectWidget(
-            assetPath: 'packages/flutter_shaders_ui/shaders/snow.frag',
+            // The root-package key loads in tests, so this checks `enabled`
+            // rather than relying on a load failure to hide the shader.
+            assetPath: 'shaders/snow.frag',
             enabled: false,
             maxFramesPerSecond: 30,
             child: Text('content'),

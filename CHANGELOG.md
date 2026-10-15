@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-10-15
+
+### Fixed
+
+- **A failed shader load is no longer cached forever.** `ShaderCache.load`
+  kept the failed future as "pending", so every later call for that asset
+  got the same error back and could never retry. The pending entry is now
+  removed whether the load succeeds or fails.
+- **A load that finishes after `assetPath` changed is discarded.**
+  `ShaderEffectWidget` could apply a superseded load on top of the current
+  one, rendering the previous shader and leaking the `FragmentShader` it
+  replaced. Load failures are also now reported against the asset that was
+  actually requested.
+
 ## [1.2.0] - 2026-08-24
 
 ### Added

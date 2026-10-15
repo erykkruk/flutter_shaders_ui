@@ -125,6 +125,10 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
   /// Exposed for tests and debug overlays.
   bool get loadFailed => _loadFailed;
 
+  /// Incremented on every load request, so a load that finishes after
+  /// [ShaderEffectWidget.assetPath] changed can tell it is stale.
+  int _loadGeneration = 0;
+
   @override
   void initState() {
     super.initState();
@@ -133,9 +137,13 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
   }
 
   Future<void> _loadShader() async {
+    final generation = ++_loadGeneration;
+    final assetPath = widget.assetPath;
     try {
-      final program = await ShaderCache.load(widget.assetPath);
-      if (!mounted) return;
+      final program = await ShaderCache.load(assetPath);
+      // A superseded load must not overwrite the current shader: it would
+      // render the previous asset and leak the shader it replaced.
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _program = program;
         _shader = program.fragmentShader();
@@ -145,7 +153,7 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
       // A missing or uncompilable shader must degrade to the child rather
       // than take the whole subtree down: the effect is decoration, the
       // child is content.
-      if (mounted) {
+      if (mounted && generation == _loadGeneration) {
         setState(() => _loadFailed = true);
       }
       FlutterError.reportError(
@@ -154,7 +162,7 @@ class _ShaderEffectWidgetState extends State<ShaderEffectWidget>
           stack: stackTrace,
           library: 'flutter_shaders_ui',
           context: ErrorDescription(
-            'while loading the shader "${widget.assetPath}"',
+            'while loading the shader "$assetPath"',
           ),
         ),
       );

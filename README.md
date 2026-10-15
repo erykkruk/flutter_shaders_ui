@@ -61,7 +61,7 @@ Full documentation is hosted at Codigee:
 
 ```yaml
 dependencies:
-  flutter_shaders_ui: ^1.0.4
+  flutter_shaders_ui: ^1.2.1
 ```
 
 ## Quick Start
